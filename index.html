@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenReceipt AI — Every Receipt Has a Story</title>
+<meta name="description" content="GreenReceipt AI turns any shopping receipt into an AI Purchase Intelligence Report — spending, wellness, and sustainability insights in one score: PurchaseIQ™.">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            50:  '#EEF5F0', 100: '#DCEBE1', 200: '#B4D3BE', 300: '#8CBB9B',
+            400: '#5B9A70', 500: '#2F7A49', 600: '#1F5E37', 700: '#194A2B',
+            800: '#123420', 900: '#0B2015'
+          },
+          ink: '#14181C',
+          paper: '#FAFAF8',
+          dark: { 900: '#0A0F0D', 800: '#0F1712', 700: '#16211A', 600: '#1E2E24' }
+        },
+        fontFamily: {
+          sans: ['-apple-system','BlinkMacSystemFont','"Segoe UI"','Inter','Roboto','Helvetica Neue','Arial','sans-serif']
+        },
+        borderRadius: { '2xl': '1.25rem', '3xl': '1.75rem', '4xl': '2.25rem' }
+      }
+    }
+  }
+</script>
+
+<!-- Lucide icons (CDN) -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<!-- GSAP + ScrollTrigger (CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<!-- Three.js (CDN) — hero.js feature-detects and falls back to CSS if this fails to load -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-paper text-ink font-sans antialiased">
+
+<div id="app">
+
+  <!-- ============ TOP BAR ============ -->
+  <header id="topbar" class="fixed top-0 inset-x-0 z-50 transition-colors duration-300">
+    <div class="max-w-[1120px] mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <button id="logo-home" class="flex items-center gap-2 group">
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-brand-600 text-white shrink-0">
+          <i data-lucide="receipt" style="width:16px;height:16px"></i>
+        </span>
+        <span class="font-semibold tracking-tight text-[15px] topbar-word">GreenReceipt <span class="text-brand-500">AI</span></span>
+      </button>
+      <div class="flex items-center gap-4">
+        <span id="topbar-step" class="hidden sm:inline text-sm topbar-word opacity-50"></span>
+        <button id="nav-cta" class="hidden items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-full transition-colors">
+          Try it now
+          <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ VIEW 1: LANDING (long-form story page) ============ -->
+  <section id="view-landing" class="view">
+
+    <!-- ---- HERO ---- -->
+    <div class="hero relative overflow-hidden">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-content max-w-[880px] mx-auto px-6 pt-40 sm:pt-48 text-center relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 text-brand-700 text-xs font-medium mb-8 reveal-up">
+          <i data-lucide="sparkles" style="width:13px;height:13px"></i>
+          AI Purchase Intelligence Platform
+        </div>
+        <h1 class="reveal-up text-[42px] sm:text-[64px] md:text-[76px] leading-[1.04] font-semibold tracking-tight mb-6">
+          Every Receipt Has a Story.<br> <span class="text-brand-600">Discover Yours.</span>
+        </h1>
+        <p class="reveal-up text-lg sm:text-xl text-ink/60 leading-relaxed mb-4 max-w-[560px] mx-auto">
+          Upload any receipt and watch AI transform it into a Purchase Intelligence Report — spending, wellness, and sustainability, distilled into one score.
+        </p>
+      </div>
+
+      <!-- 3D floating receipt stage -->
+      <div class="hero-stage reveal-up" id="hero-stage">
+        <div id="hero-canvas-container" class="hero-canvas-container">
+          <canvas id="hero-canvas" aria-hidden="true"></canvas>
+          <div class="hero-scanline" aria-hidden="true"></div>
+        </div>
+        <div id="hero-fallback" class="hero-fallback hidden" aria-hidden="true">
+          <div class="fallback-receipt">
+            <div class="fallback-line w-3/5"></div>
+            <div class="fallback-line w-4/5"></div>
+            <div class="fallback-line w-2/5"></div>
+            <div class="fallback-divider"></div>
+            <div class="fallback-line w-full"></div>
+            <div class="fallback-line w-3/4"></div>
+            <div class="fallback-line w-5/6"></div>
+            <div class="fallback-line w-2/3"></div>
+            <div class="fallback-divider"></div>
+            <div class="fallback-line w-1/2 accent"></div>
+          </div>
+        </div>
+        <div class="hero-orbit-label hero-orbit-label--left reveal-up" style="--d:200ms">
+          <i data-lucide="scan-line" style="width:14px;height:14px"></i> Reading items
+        </div>
+        <div class="hero-orbit-label hero-orbit-label--right reveal-up" style="--d:320ms">
+          <i data-lucide="brain-circuit" style="width:14px;height:14px"></i> PurchaseIQ™ 82
+        </div>
+      </div>
+
+      <div class="hero-cta text-center relative z-10 pb-8 px-6">
+        <button id="cta-analyze" class="reveal-up inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-base font-medium px-7 py-4 rounded-2xl shadow-lg shadow-brand-600/20 transition-all duration-200 hover:shadow-xl hover:shadow-brand-600/25 hover:-translate-y-0.5 active:translate-y-0">
+          Analyze a Receipt
+          <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+        </button>
+        <p class="reveal-up mt-4 text-xs text-ink/40">No sign-up. No data stored. Try it instantly with a sample receipt.</p>
+
+        <div class="scroll-cue reveal-up" aria-hidden="true">
+          <i data-lucide="chevron-down" style="width:18px;height:18px"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- THREE LENSES RECAP ---- -->
+    <div class="lenses-section">
+      <div class="max-w-[960px] mx-auto px-6 py-20 sm:py-28">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+          <div class="lens-card reveal-up" style="--d:0ms">
+            <div class="lens-icon"><i data-lucide="line-chart"></i></div>
+            <p class="lens-title">Spending</p>
+            <p class="lens-desc">Understand where your money actually goes, without the spreadsheet.</p>
+          </div>
+          <div class="lens-card reveal-up" style="--d:90ms">
+            <div class="lens-icon"><i data-lucide="heart-pulse"></i></div>
+            <p class="lens-title">Wellness</p>
+            <p class="lens-desc">See the nutritional story behind your basket — no tracking required.</p>
+          </div>
+          <div class="lens-card reveal-up" style="--d:180ms">
+            <div class="lens-icon"><i data-lucide="leaf"></i></div>
+            <p class="lens-title">Sustainability</p>
+            <p class="lens-desc">Know the packaging and waste impact of every trip you take.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- AI PIPELINE STORYTELLING (dark section) ---- -->
+    <div class="pipeline-section" id="pipeline-section">
+      <div class="max-w-[720px] mx-auto px-6 py-24 sm:py-32">
+        <div class="text-center mb-10 sm:mb-12">
+          <p class="pipeline-eyebrow reveal-up">How it works</p>
+          <h2 class="pipeline-heading reveal-up">From receipt to intelligence.</h2>
+          <p class="pipeline-sub reveal-up">Every ordinary purchase, read and reasoned about by AI — in seconds.</p>
+        </div>
+
+        <div class="ai-core-wrap reveal-up" id="ai-core-wrap">
+          <div class="ai-core-stage" id="ai-core-stage">
+            <canvas id="ai-core-canvas" aria-hidden="true"></canvas>
+            <div class="ai-core-fallback hidden" id="ai-core-fallback" aria-hidden="true">
+              <div class="ai-core-fallback-badge"><i data-lucide="cpu"></i></div>
+            </div>
+          </div>
+          <span class="ai-core-caption"><i data-lucide="cpu" style="width:12px;height:12px"></i> AI Core — reasoning in real time</span>
+        </div>
+
+        <div class="pipeline-track" id="pipeline-track">
+          <div class="pipeline-line" aria-hidden="true"><div class="pipeline-line-fill" id="pipeline-line-fill"></div></div>
+
+          <div class="pipeline-step" data-step="1">
+            <div class="pipeline-dot"><i data-lucide="image"></i></div>
+            <div class="pipeline-copy">
+              <p class="pipeline-step-label">Step 1</p>
+              <h3>Receipt Image</h3>
+              <p>A photo, PDF, or one of our sample receipts is all AI needs to begin.</p>
+            </div>
+          </div>
+          <div class="pipeline-step" data-step="2">
+            <div class="pipeline-dot"><i data-lucide="eye"></i></div>
+            <div class="pipeline-copy">
+              <p class="pipeline-step-label">Step 2</p>
+              <h3>Vision AI</h3>
+              <p>Claude's vision model reads every line, price, and product on the receipt.</p>
+            </div>
+          </div>
+          <div class="pipeline-step" data-step="3">
+            <div class="pipeline-dot"><i data-lucide="shapes"></i></div>
+            <div class="pipeline-copy">
+              <p class="pipeline-step-label">Step 3</p>
+              <h3>Product Understanding</h3>
+              <p>Items are categorized — produce, household, beverages, and more.</p>
+            </div>
+          </div>
+          <div class="pipeline-step" data-step="4">
+            <div class="pipeline-dot"><i data-lucide="activity"></i></div>
+            <div class="pipeline-copy">
+              <p class="pipeline-step-label">Step 4</p>
+              <h3>Behavior Analysis</h3>
+              <p>Spending patterns and purchase habits are identified across the basket.</p>
+            </div>
+          </div>
+          <div class="pipeline-step" data-step="5">
+            <div class="pipeline-dot"><i data-lucide="gauge-circle"></i></div>
+            <div class="pipeline-copy">
+              <p class="pipeline-step-label">Step 5</p>
+              <h3>PurchaseIQ™</h3>
+              <p>Four dimensions combine into one signature intelligence score.</p>
+            </div>
+          </div>
+          <div class="pipeline-step" data-step="6">
+            <div class="pipeline-dot"><i data-lucide="lightbulb"></i></div>
+            <div class="pipeline-copy">
+              <p class="pipeline-step-label">Step 6</p>
+              <h3>Personalized Recommendations</h3>
+              <p>Three practical next steps — financial, sustainable, and wellness-focused.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- PERSONAS: ONE RECEIPT, THREE PERSPECTIVES ---- -->
+    <div class="personas-section">
+      <div class="max-w-[1040px] mx-auto px-6 py-24 sm:py-28">
+        <div class="text-center mb-14">
+          <h2 class="text-3xl sm:text-[40px] font-semibold tracking-tight mb-3 reveal-up">One Receipt. Three Perspectives.</h2>
+          <p class="text-ink/55 text-base sm:text-lg reveal-up max-w-[520px] mx-auto">The same purchase means something different to everyone. PurchaseIQ™ adapts the story to what matters to you.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="persona-cards">
+          <div class="persona-card reveal-up" style="--d:0ms">
+            <div class="persona-icon"><i data-lucide="graduation-cap"></i></div>
+            <p class="persona-role">Student</p>
+            <p class="persona-problem">"I want to understand where my money goes."</p>
+            <div class="persona-insight">
+              <span class="persona-insight-tag">AI Insight</span>
+              <p>Your spending shows frequent small purchases that add up over time.</p>
+            </div>
+          </div>
+          <div class="persona-card reveal-up" style="--d:100ms">
+            <div class="persona-icon"><i data-lucide="home"></i></div>
+            <p class="persona-role">Family</p>
+            <p class="persona-problem">"We want healthier and smarter shopping choices."</p>
+            <div class="persona-insight">
+              <span class="persona-insight-tag">AI Insight</span>
+              <p>Your grocery choices show opportunities for healthier alternatives.</p>
+            </div>
+          </div>
+          <div class="persona-card reveal-up" style="--d:200ms">
+            <div class="persona-icon"><i data-lucide="leaf"></i></div>
+            <p class="persona-role">Conscious Consumer</p>
+            <p class="persona-problem">"I want my purchases to align with my values."</p>
+            <div class="persona-insight">
+              <span class="persona-insight-tag">AI Insight</span>
+              <p>Your receipt contains opportunities to reduce packaging waste.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- GLOBAL IMPACT ---- -->
+    <div class="impact-section">
+      <div class="max-w-[1040px] mx-auto px-6 py-24 sm:py-28">
+        <div class="text-center mb-14">
+          <p class="impact-eyebrow reveal-up">Global Potential</p>
+          <h2 class="impact-heading reveal-up">A local idea. A worldwide problem.</h2>
+          <p class="impact-sub reveal-up">Every receipt on Earth holds the same untapped intelligence — GreenReceipt AI is built to read all of them.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="impact-card reveal-up" style="--d:0ms">
+            <div class="impact-icon"><i data-lucide="globe"></i></div>
+            <span class="impact-stat">Billions</span>
+            <h3>A Universal Moment</h3>
+            <p>Retailers worldwide print billions of paper and digital receipts every year — each one a discarded snapshot of a decision no one ever revisits.</p>
+          </div>
+          <div class="impact-card reveal-up" style="--d:100ms">
+            <div class="impact-icon"><i data-lucide="map-pin"></i></div>
+            <span class="impact-stat">9M+</span>
+            <h3>Built With the UAE in Mind</h3>
+            <p>A digital-first population of over 9 million residents, a Net Zero 2050 agenda, and some of the world's most tech-forward retail — an ideal home market for AI purchase intelligence.</p>
+          </div>
+          <div class="impact-card reveal-up" style="--d:200ms">
+            <div class="impact-icon"><i data-lucide="languages"></i></div>
+            <span class="impact-stat">∞</span>
+            <h3>Infinitely Scalable</h3>
+            <p>The same vision-AI pipeline that reads a grocery receipt in English extends to any currency, language, or retail format — no new architecture required.</p>
+          </div>
+        </div>
+
+        <p class="impact-footnote">Figures above are illustrative estimates meant to size the opportunity, not verified market research.</p>
+      </div>
+    </div>
+
+    <!-- ---- RESPONSIBLE AI ---- -->
+    <div class="trust-section">
+      <div class="max-w-[960px] mx-auto px-6 py-20 sm:py-24">
+        <div class="text-center mb-12">
+          <p class="impact-eyebrow reveal-up">Responsible by Design</p>
+          <h2 class="text-3xl sm:text-[40px] font-semibold tracking-tight mb-3 reveal-up">Ambitious, but honest about its limits.</h2>
+          <p class="text-ink/55 text-base sm:text-lg reveal-up max-w-[520px] mx-auto">Scaling an AI product responsibly means being upfront about what it is — and isn't.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="trust-card reveal-up" style="--d:0ms">
+            <div class="trust-icon"><i data-lucide="badge-check"></i></div>
+            <h3>Estimates, Not Certainties</h3>
+            <p>Every score and insight is clearly labeled as an AI-generated estimate — never presented as precise measurement.</p>
+          </div>
+          <div class="trust-card reveal-up" style="--d:90ms">
+            <div class="trust-icon"><i data-lucide="shield-alert"></i></div>
+            <h3>Never Medical or Financial Advice</h3>
+            <p>Wellness and spending insights stay educational and observational — never diagnostic, prescriptive, or investment guidance.</p>
+          </div>
+          <div class="trust-card reveal-up" style="--d:180ms">
+            <div class="trust-icon"><i data-lucide="anchor"></i></div>
+            <h3>Grounded in Your Receipt</h3>
+            <p>Every rationale traces back to items actually extracted from your receipt — click any PurchaseIQ™ ring to see exactly which ones.</p>
+          </div>
+          <div class="trust-card reveal-up" style="--d:270ms">
+            <div class="trust-icon"><i data-lucide="lock"></i></div>
+            <h3>Your Data Stays Local</h3>
+            <p>The guaranteed demo path never leaves your browser. No accounts, no server, no receipts stored anywhere.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- FUTURE POTENTIAL + FINAL CTA ---- -->
+    <div class="final-cta-section">
+      <div class="max-w-[640px] mx-auto px-6 py-24 sm:py-28 text-center">
+        <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight mb-4 reveal-up">One receipt today. Every purchase, eventually.</h2>
+        <p class="text-ink/55 text-base sm:text-lg mb-10 leading-relaxed reveal-up">
+          GreenReceipt AI starts with a single receipt. The vision is a personal purchase-intelligence layer across your entire shopping life — shopping history, weekly reports, and smarter habits, built in.
+        </p>
+        <button class="cta-analyze-secondary reveal-up inline-flex items-center gap-2 bg-ink hover:bg-black text-white text-[15px] font-medium px-6 py-3.5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5">
+          Analyze a Receipt
+          <i data-lucide="arrow-right" style="width:15px;height:15px"></i>
+        </button>
+        <p class="text-xs text-ink/35 mt-8 reveal-up">GreenReceipt AI · every receipt has a story</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW 2: UPLOAD ============ -->
+  <section id="view-upload" class="view hidden min-h-screen pt-28 pb-20 px-6">
+    <div class="max-w-[640px] mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight mb-3">Analyze a receipt</h2>
+        <p class="text-ink/55 text-base sm:text-lg">Drop a receipt image below, or try one of our sample receipts instantly.</p>
+      </div>
+
+      <div class="mode-toggle-row">
+        <div class="mode-toggle" id="mode-toggle" role="tablist">
+          <button class="mode-toggle-btn is-active" id="mode-btn-demo" data-mode="demo" type="button">
+            <i data-lucide="zap" style="width:13px;height:13px"></i> Demo Mode
+          </button>
+          <button class="mode-toggle-btn" id="mode-btn-live" data-mode="live" type="button">
+            <i data-lucide="camera" style="width:13px;height:13px"></i> Live Claude Vision
+          </button>
+        </div>
+        <span class="mode-toggle-hint">Demo Mode uses instant, pre-generated sample data. No network required.</span>
+      </div>
+
+      <div id="live-key-panel" class="live-key-panel hidden">
+        <label for="live-api-key" class="live-key-label">Anthropic API key</label>
+        <input type="password" id="live-api-key" class="live-key-input" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+        <p class="live-key-note">
+          <i data-lucide="shield-alert" style="width:13px;height:13px"></i>
+          Used only in this browser tab to call the Anthropic API directly — never stored, logged, or sent anywhere else. It <em>is</em> visible in your browser's network requests, since there's no backend here. Set a spending cap on this key before using it.
+        </p>
+      </div>
+
+      <div id="dropzone" class="dropzone-glass relative cursor-pointer px-6 py-10 sm:py-12 text-center">
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <div class="flex flex-col items-center gap-3 pointer-events-none">
+          <div class="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600">
+            <i data-lucide="upload-cloud" style="width:22px;height:22px"></i>
+          </div>
+          <p class="font-medium text-[15px]" id="dropzone-title">Drag & drop a receipt image</p>
+          <p class="text-sm text-ink/45" id="dropzone-subtitle">or click to browse · JPG, PNG</p>
+        </div>
+      </div>
+
+      <div id="upload-notice" class="hidden mt-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-sm px-5 py-4 fade-up"></div>
+
+      <div class="flex items-center gap-4 my-10">
+        <div class="h-px flex-1 bg-black/10"></div>
+        <span class="text-xs uppercase tracking-wide text-ink/40 font-medium">Or try a sample receipt</span>
+        <div class="h-px flex-1 bg-black/10"></div>
+      </div>
+
+      <div id="sample-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+
+      <p class="text-center text-xs text-ink/35 mt-10">GreenReceipt AI provides estimates for educational purposes only — not medical, financial, or environmental certification.</p>
+    </div>
+  </section>
+
+  <!-- ============ VIEW 3: PROCESSING ============ -->
+  <section id="view-processing" class="view hidden min-h-screen flex items-center justify-center px-6">
+    <div class="text-center">
+      <div class="relative w-24 h-24 mx-auto mb-8">
+        <svg class="animate-spin-slow" width="96" height="96" viewBox="0 0 96 96" fill="none">
+          <circle cx="48" cy="48" r="40" stroke="#E7ECE8" stroke-width="6"/>
+          <path d="M48 8a40 40 0 0 1 40 40" stroke="#2F7A49" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+        <span class="absolute inset-0 flex items-center justify-center text-brand-600">
+          <i data-lucide="receipt" style="width:28px;height:28px"></i>
+        </span>
+      </div>
+      <p id="processing-text" class="text-lg font-medium text-ink/80 min-h-[28px] transition-opacity duration-200">Reading receipt…</p>
+      <p class="text-sm text-ink/40 mt-2 mb-6">PurchaseIQ™ is analyzing your purchase</p>
+      <div class="processing-progress"><div class="processing-progress-fill" id="processing-progress-fill"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW 4: REPORT ============ -->
+  <section id="view-report" class="view hidden min-h-screen pt-24 pb-24 px-5 sm:px-6">
+    <div class="max-w-[760px] mx-auto">
+
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-ink/40 font-medium" id="report-label">Grocery Run</p>
+          <p class="text-sm text-ink/45" id="report-subtitle"></p>
+        </div>
+        <span class="hidden sm:inline-flex items-center gap-1.5 text-xs text-ink/40 bg-black/[0.03] px-3 py-1.5 rounded-full">
+          <i data-lucide="shield-check" style="width:12px;height:12px"></i>
+          AI-generated estimate
+        </span>
+      </div>
+
+      <!-- Extracted Receipt Items -->
+      <div class="fade-up insight-card mb-5">
+        <div class="insight-head justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="insight-icon"><i data-lucide="scan-line"></i></span>
+            <h3>What We Found on Your Receipt</h3>
+          </div>
+          <button id="clear-filter-btn" class="clear-filter-btn hidden" type="button">
+            <i data-lucide="x" style="width:12px;height:12px"></i> Clear Filter
+          </button>
+        </div>
+        <p id="filter-caption" class="filter-caption hidden"></p>
+        <div id="items-list" class="items-grid"></div>
+        <div class="items-total-row">
+          <span class="label">Total</span>
+          <span class="value" id="items-total"></span>
+        </div>
+      </div>
+
+      <!-- PurchaseIQ Hero (premium, dark, signature feature) -->
+      <div class="purchaseiq-hero fade-up" id="purchaseiq-hero">
+        <div class="purchaseiq-top">
+          <div class="purchaseiq-ring-wrap">
+            <div class="score-ring-conic" id="score-ring-conic" style="--score-percent:0; --ring-accent-color:#34D399;">
+              <div class="purchaseiq-ring-center">
+                <span id="score-total">0</span>
+                <span class="purchaseiq-ring-max">/ 100</span>
+              </div>
+            </div>
+          </div>
+          <div class="purchaseiq-intro">
+            <p class="purchaseiq-label">PurchaseIQ™ <span id="score-preview-tag" class="score-preview-tag hidden">previewing optimized</span></p>
+            <p class="purchaseiq-copy">A single AI-generated score combining spending, wellness, sustainability, and waste efficiency for this receipt.</p>
+          </div>
+        </div>
+
+        <div id="subscores" class="purchaseiq-subscores"></div>
+
+        <p class="purchaseiq-disclaimer">PurchaseIQ™ is an AI-generated estimate based on this receipt's contents — not a certified financial, nutritional, or environmental measurement.</p>
+      </div>
+
+      <!-- Spending Insights -->
+      <div class="fade-up insight-card mb-5">
+        <div class="insight-head">
+          <span class="insight-icon"><i data-lucide="line-chart"></i></span>
+          <h3>Spending Insights</h3>
+        </div>
+        <ul id="spending-list" class="insight-list"></ul>
+      </div>
+
+      <!-- Wellness Insights (conditional) -->
+      <div id="wellness-card" class="fade-up insight-card mb-5">
+        <div class="insight-head">
+          <span class="insight-icon"><i data-lucide="heart-pulse"></i></span>
+          <h3>Wellness Insights</h3>
+        </div>
+        <ul id="wellness-list" class="insight-list"></ul>
+        <p class="insight-footnote">Educational estimate only — not medical or dietary advice.</p>
+      </div>
+
+      <!-- Sustainability Insights -->
+      <div class="fade-up insight-card mb-5">
+        <div class="insight-head">
+          <span class="insight-icon"><i data-lucide="leaf"></i></span>
+          <h3>Sustainability Insights</h3>
+        </div>
+        <div id="sustainability-bands" class="grid grid-cols-2 gap-3 mb-4"></div>
+        <p id="sustainability-reasoning" class="text-[15px] text-ink/65 leading-relaxed"></p>
+        <div id="regional-context-box" class="regional-context-box hidden">
+          <span class="regional-context-tag"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Regional Context</span>
+          <p id="regional-context-text"></p>
+        </div>
+        <p class="insight-footnote">Qualitative estimate only — not a verified carbon or environmental calculation.</p>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="fade-up mt-8 mb-4">
+        <h3 class="text-xl font-semibold tracking-tight mb-1">Recommendations</h3>
+        <p class="text-sm text-ink/50 mb-5">Three practical next steps based on this receipt — tap any card to simulate its impact.</p>
+        <div id="recommendations" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- Receipt Optimization Engine -->
+      <div class="fade-up optimize-section mt-8" id="optimize-section">
+        <div class="optimize-header">
+          <h3 class="text-xl font-semibold tracking-tight mb-1">PurchaseIQ™ Receipt Optimization Engine</h3>
+          <p class="text-sm text-ink/50">See exactly what an AI-optimized version of this basket could look like.</p>
+        </div>
+
+        <div class="optimize-columns">
+          <div class="optimize-col optimize-col--original">
+            <p class="optimize-col-label">Original Receipt</p>
+            <div id="optimize-original-items" class="optimize-items"></div>
+            <div class="optimize-col-total"><span>Total</span><span id="optimize-original-total"></span></div>
+          </div>
+
+          <div class="optimize-col optimize-col--new">
+            <p class="optimize-col-label optimize-col-label--new"><i data-lucide="sparkles" style="width:13px;height:13px"></i> AI-Suggested GreenReceipt</p>
+            <div id="optimize-new-items" class="optimize-items"></div>
+            <div class="optimize-col-total"><span>Total</span><span id="optimize-new-total"></span></div>
+            <button id="apply-eco-swaps-btn" class="apply-swaps-btn" type="button">
+              <i data-lucide="wand-sparkles" style="width:15px;height:15px"></i>
+              <span id="apply-eco-swaps-label">Apply Eco-Swaps</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="optimize-note-card" id="optimize-note-card">
+          <span class="optimize-note-tag"><i data-lucide="bot" style="width:12px;height:12px"></i> AI Comparison &amp; Impact Note</span>
+          <p id="optimize-note-text"></p>
+        </div>
+      </div>
+
+      <!-- AI Inspector -->
+      <div class="fade-up inspector-card mt-8">
+        <button id="inspector-toggle" class="inspector-toggle" type="button" aria-expanded="false">
+          <span class="inspector-toggle-left">
+            <i data-lucide="terminal" style="width:15px;height:15px"></i>
+            Inspect AI Prompt &amp; Schema
+          </span>
+          <i data-lucide="chevron-down" class="inspector-chevron" style="width:16px;height:16px"></i>
+        </button>
+        <div id="inspector-body" class="inspector-body">
+          <div class="inspector-body-inner">
+            <p class="inspector-section-label">System Prompt</p>
+            <pre class="inspector-code" id="inspector-prompt"></pre>
+
+            <p class="inspector-section-label">Raw Schema Response</p>
+            <pre class="inspector-code" id="inspector-schema"></pre>
+
+            <p class="inspector-section-label">Metadata</p>
+            <div class="inspector-meta-grid" id="inspector-meta"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up flex flex-col items-center mt-12 pt-8 border-t border-black/[0.06]">
+        <button id="analyze-another" class="inline-flex items-center gap-2 bg-ink hover:bg-black text-white text-[15px] font-medium px-6 py-3.5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5">
+          Analyze another receipt
+          <i data-lucide="rotate-ccw" style="width:15px;height:15px"></i>
+        </button>
+        <p class="text-xs text-ink/35 mt-4">GreenReceipt AI · every receipt has a story</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHAT-IF IMPACT SIMULATOR DRAWER ============ -->
+  <div id="whatif-backdrop" class="whatif-backdrop hidden"></div>
+  <aside id="whatif-drawer" class="whatif-drawer" aria-hidden="true">
+    <div class="whatif-drawer-head">
+      <div>
+        <p class="whatif-eyebrow">What If Simulator</p>
+        <h3 id="whatif-title">Recommendation</h3>
+      </div>
+      <button id="whatif-close" class="whatif-close" type="button" aria-label="Close">
+        <i data-lucide="x" style="width:16px;height:16px"></i>
+      </button>
+    </div>
+    <div class="whatif-drawer-body">
+      <p id="whatif-recap" class="whatif-recap"></p>
+
+      <div class="whatif-stat">
+        <div class="whatif-stat-icon" style="background:linear-gradient(145deg,#FBBF24,#B45309)"><i data-lucide="wallet"></i></div>
+        <div>
+          <p class="whatif-stat-label">Estimated Monthly Savings</p>
+          <p class="whatif-stat-value" id="whatif-savings">$0.00</p>
+        </div>
+      </div>
+
+      <div class="whatif-stat">
+        <div class="whatif-stat-icon" style="background:linear-gradient(145deg,#4ADE80,#15803D)"><i data-lucide="recycle"></i></div>
+        <div>
+          <p class="whatif-stat-label">Annual Packaging Waste Avoided</p>
+          <p class="whatif-stat-value" id="whatif-waste">0 kg</p>
+        </div>
+      </div>
+
+      <div class="whatif-stat">
+        <div class="whatif-stat-icon" style="background:linear-gradient(145deg,#38BDF8,#0369A1)"><i data-lucide="trending-up"></i></div>
+        <div class="flex-1">
+          <p class="whatif-stat-label" id="whatif-subscore-label">Sustainability Subscore</p>
+          <div class="whatif-subscore-track">
+            <div class="whatif-subscore-before" id="whatif-subscore-before-bar"></div>
+            <div class="whatif-subscore-after" id="whatif-subscore-after-bar"></div>
+          </div>
+          <p class="whatif-stat-value" id="whatif-subscore-values">74 → 87</p>
+        </div>
+      </div>
+
+      <p class="whatif-disclaimer">Projected impact is an AI-generated estimate based on typical outcomes for a change like this — not a guarantee.</p>
+    </div>
+  </aside>
+
+</div>
+
+<script src="app.js" defer></script>
+<script src="hero.js" defer></script>
+<script src="ai-core.js" defer></script>
+<script src="motion.js" defer></script>
+</body>
+</html>
