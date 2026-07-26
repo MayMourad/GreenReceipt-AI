@@ -1,0 +1,59 @@
+{
+  "receiptLabel": "Household Supplies Run",
+  "receiptSubtitle": "Household staples · 5 items · $35.95",
+  "extractedItems": [
+    { "name": "Laundry Detergent", "category": "household", "estimatedPrice": 11.99 },
+    { "name": "Paper Towels 6-pack", "category": "household", "estimatedPrice": 8.49 },
+    { "name": "Dish Soap", "category": "household", "estimatedPrice": 3.49 },
+    { "name": "Trash Bags", "category": "household", "estimatedPrice": 6.99 },
+    { "name": "All-Purpose Cleaner", "category": "household", "estimatedPrice": 4.99 }
+  ],
+  "purchaseIQ": {
+    "total": 76,
+    "subScores": {
+      "spendingEfficiency": { "score": 80, "rationale": "All five items are recurring household staples with no discretionary add-ons detected." },
+      "wellness": { "score": 70, "rationale": "No food items were detected in this basket, so no nutrition-related analysis applies here." },
+      "sustainability": { "score": 68, "rationale": "Several items, including the detergent and cleaner, use plastic bottles common to this product category." },
+      "wasteEfficiency": { "score": 78, "rationale": "Pack sizes purchased align with typical multi-week household use, reducing the need for repeat trips." }
+    }
+  },
+  "spendingInsights": [
+    "This $36 basket is composed entirely of recurring household staples, with no discretionary items detected.",
+    "Buying the paper towels and trash bags as multipacks is already reducing your per-unit cost.",
+    "Consolidating detergent and cleaner into larger sizes next time could reduce cost per use further."
+  ],
+  "wellnessInsights": null,
+  "sustainabilityInsights": {
+    "packagingImpact": "Moderate",
+    "singleUsePlastic": "Moderate",
+    "localPurchasingEstimate": "Low",
+    "wasteGeneration": "Moderate",
+    "reasoning": "Several items, including the detergent and all-purpose cleaner, come in plastic bottles. Refillable or concentrate versions of these products could reduce plastic use over time.",
+    "regionalContext": "In the UAE, retailers increasingly charge a per-bag single-use plastic fee at checkout — a basket like this one, with several plastic-bottled items, is a good candidate for the refill stations now appearing in Dubai and Abu Dhabi supermarkets."
+  },
+  "recommendations": [
+    {
+      "category": "Financial",
+      "text": "Buying detergent and cleaner as concentrates or refills is often cheaper per use than standard bottles.",
+      "rationale": "Detergent and cleaner were the two highest-cost items in this basket and are purchased repeatedly.",
+      "whatIf": { "monthlySavings": 6.75, "annualWasteAvoidedKg": 1.2, "subscoreImpact": { "key": "spendingEfficiency", "from": 80, "to": 90 } }
+    },
+    {
+      "category": "Sustainability",
+      "text": "Switching to refillable containers for detergent and all-purpose cleaner could meaningfully cut plastic waste from routine household shopping.",
+      "rationale": "These two items account for most of the plastic packaging identified in this basket.",
+      "whatIf": { "monthlySavings": 4.00, "annualWasteAvoidedKg": 3.6, "subscoreImpact": { "key": "sustainability", "from": 68, "to": 84 } }
+    },
+    {
+      "category": "Wellness",
+      "text": "Choosing fragrance-free versions of cleaning products can reduce airborne irritants for scent-sensitive households.",
+      "rationale": "Standard detergent and all-purpose cleaner formulas often contain added fragrance compounds.",
+      "whatIf": { "monthlySavings": 0, "annualWasteAvoidedKg": 0, "subscoreImpact": { "key": "wellness", "from": 70, "to": 74 } }
+    }
+  ],
+  "aiMetadata": {
+    "modelId": "claude-sonnet-5",
+    "confidence": 0.95,
+    "processingLatencyMs": 1390
+  }
+}

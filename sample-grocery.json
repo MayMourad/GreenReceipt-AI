@@ -1,0 +1,68 @@
+{
+  "receiptLabel": "Grocery Run",
+  "receiptSubtitle": "Weekly groceries · 10 items · $53.20",
+  "extractedItems": [
+    { "name": "Organic Spinach", "category": "produce", "estimatedPrice": 3.49, "origin": "Local" },
+    { "name": "Bananas (bunch)", "category": "produce", "estimatedPrice": 1.99, "origin": "Imported" },
+    { "name": "Whole Milk", "category": "dairy", "estimatedPrice": 4.29 },
+    { "name": "Greek Yogurt", "category": "dairy", "estimatedPrice": 5.49 },
+    { "name": "Chicken Breast", "category": "protein", "estimatedPrice": 8.99 },
+    { "name": "Brown Rice", "category": "pantry", "estimatedPrice": 4.49 },
+    { "name": "Olive Oil", "category": "pantry", "estimatedPrice": 9.99 },
+    { "name": "Whole Wheat Bread", "category": "bakery", "estimatedPrice": 3.99 },
+    { "name": "Sparkling Water 12-pack", "category": "beverage", "estimatedPrice": 6.99 },
+    { "name": "Dish Soap", "category": "household", "estimatedPrice": 3.49 }
+  ],
+  "purchaseIQ": {
+    "total": 82,
+    "subScores": {
+      "spendingEfficiency": { "score": 78, "rationale": "Purchase stayed within a typical weekly grocery range with only one clearly discretionary item." },
+      "wellness": { "score": 85, "rationale": "Basket is weighted toward fresh produce, lean protein, and whole grains, with few processed items." },
+      "sustainability": { "score": 74, "rationale": "Mostly recyclable cardboard and glass packaging, with the sparkling water multipack as the main plastic source." },
+      "wasteEfficiency": { "score": 80, "rationale": "Quantities purchased align well with typical single-household weekly consumption." }
+    }
+  },
+  "spendingInsights": [
+    "This basket totaled approximately $53, with about 13% spent on beverages.",
+    "Only one item — the sparkling water — falls into a discretionary category; the rest are recurring staples.",
+    "Buying pantry staples like rice and olive oil in bulk sizes could lower their per-unit cost on future trips."
+  ],
+  "wellnessInsights": [
+    "This basket includes lean protein, fresh produce, and whole grains — a well-rounded foundation for the week.",
+    "Greek yogurt and chicken breast provide a solid protein base alongside the fresh produce.",
+    "Adding a second vegetable variety beyond spinach could broaden this week's micronutrient range."
+  ],
+  "sustainabilityInsights": {
+    "packagingImpact": "Moderate",
+    "singleUsePlastic": "Low",
+    "localPurchasingEstimate": "Moderate",
+    "wasteGeneration": "Low",
+    "reasoning": "Most items use recyclable cardboard or glass packaging. The sparkling water multipack is the main source of single-use plastic in this basket.",
+    "regionalContext": "In markets with single-use plastic policies — such as the UAE's bag fees and bans in Abu Dhabi and Dubai — packaging choices like the sparkling water multipack can carry a direct point-of-sale cost in addition to their environmental footprint."
+  },
+  "recommendations": [
+    {
+      "category": "Financial",
+      "text": "Buying rice and olive oil in bulk sizes could lower your average cost per use over time.",
+      "rationale": "Pantry staples like these are purchased repeatedly, so bulk pricing compounds into meaningful savings across trips.",
+      "whatIf": { "monthlySavings": 8.20, "annualWasteAvoidedKg": 1.6, "subscoreImpact": { "key": "spendingEfficiency", "from": 78, "to": 89 } }
+    },
+    {
+      "category": "Sustainability",
+      "text": "Swapping the sparkling water multipack for a home carbonation system could cut plastic waste from this basket by more than half.",
+      "rationale": "Sparkling water was the single largest source of single-use plastic identified in this receipt.",
+      "whatIf": { "monthlySavings": 14.50, "annualWasteAvoidedKg": 9.4, "subscoreImpact": { "key": "sustainability", "from": 74, "to": 87 } }
+    },
+    {
+      "category": "Wellness",
+      "text": "Adding a second vegetable variety alongside spinach would broaden the nutritional range of this week's meals.",
+      "rationale": "The basket currently relies on one produce item for most of its micronutrient variety.",
+      "whatIf": { "monthlySavings": 0, "annualWasteAvoidedKg": 0.3, "subscoreImpact": { "key": "wellness", "from": 85, "to": 90 } }
+    }
+  ],
+  "aiMetadata": {
+    "modelId": "claude-sonnet-5",
+    "confidence": 0.94,
+    "processingLatencyMs": 1620
+  }
+}
